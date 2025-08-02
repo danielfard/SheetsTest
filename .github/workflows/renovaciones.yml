@@ -18,4 +18,4 @@ jobs:
       - name: Install dependencies
         run: pip install pandas
       - name: Run script
-        run: python renovaciones.py
+        run: python renovations.py
