@@ -126,4 +126,9 @@ def verificar_renovaciones():
             print(f"Error procesando fila: {e}")
 
 if __name__ == "__main__":
-    verificar_renovaciones()
+    try:
+        verificar_renovaciones()
+    except Exception as e:
+        print("\n[ERROR FATAL] Ocurrió un error inesperado en la ejecución principal:")
+        import traceback
+        traceback.print_exc()
