@@ -27,7 +27,8 @@ EMAIL_ORIGEN = os.getenv("EMAIL_ORIGEN")
 EMAIL_CLAVE = os.getenv("EMAIL_CLAVE")  # Contraseña de app de Gmail
 EMAIL_SERVIDOR = "smtp.gmail.com"
 EMAIL_PUERTO = 465
-SPREADSHEET_NOMBRE = "Licencias"  # Nombre exacto de tu hoja de cálculo
+# Cambiar a lista de nombres de hojas
+SPREADSHEET_NOMBRES = ["Licencias"]  # Puedes agregar más nombres aquí
 CREDENCIALES_JSON = "credenciales.json"    # Nombre del archivo de credenciales
 
 
@@ -50,12 +51,13 @@ def cargar_plantilla_html(software, fecha, monto):
         return contenido.safe_substitute(software=software, fecha=fecha, monto=monto)
 
 
-def cargar_datos_google_sheets():
+def cargar_datos_google_sheets(sheet_names):
     """
-    Obtiene los datos de la hoja de cálculo de Google Sheets.
-
+    Obtiene los datos de varias hojas de cálculo de Google Sheets.
+    Args:
+        sheet_names (list): Lista de nombres de hojas a procesar.
     Returns:
-        list: Lista de diccionarios con los datos de cada fila de la hoja.
+        list: Lista de diccionarios con los datos de cada fila de todas las hojas.
     """
     scope = [
         "https://spreadsheets.google.com/feeds",
@@ -63,10 +65,15 @@ def cargar_datos_google_sheets():
     ]
     creds = ServiceAccountCredentials.from_json_keyfile_name(CREDENCIALES_JSON, scope)
     client = gspread.authorize(creds)
-
-    sheet = client.open(SPREADSHEET_NOMBRE).sheet1
-    data = sheet.get_all_records()
-    return data
+    all_data = []
+    for name in sheet_names:
+        try:
+            sheet = client.open(name).sheet1
+            data = sheet.get_all_records()
+            all_data.extend(data)
+        except Exception as e:
+            print(f"Error accediendo a la hoja '{name}': {e}")
+    return all_data
 
 
 
@@ -103,14 +110,12 @@ def verificar_renovaciones():
     Verifica las renovaciones próximas y envía notificaciones por correo electrónico si corresponde.
     """
     hoy = datetime.today().date()
-    datos = cargar_datos_google_sheets()
-
+    datos = cargar_datos_google_sheets(SPREADSHEET_NOMBRES)
     for fila in datos:
         try:
             fecha_renovacion = datetime.strptime(fila["Fecha de renovación"], "%Y-%m-%d").date()
             dias_restantes = (fecha_renovacion - hoy).days
-
-            if 0 < dias_restantes <= DIAS_ANTICIPACION:
+            if dias_restantes in [1, 7]:
                 enviar_correo(
                     fila["Correo"],
                     fila["Nombre del software"],
