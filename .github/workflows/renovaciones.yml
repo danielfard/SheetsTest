@@ -22,7 +22,7 @@ jobs:
           pip install -r requirements.txt
 
       - name: Crear credenciales.json
-        run: printf '%s' "${{ secrets.GOOGLE_CREDENTIALS_JSON }}" > credenciales.json
+        run: echo "${{ secrets.GOOGLE_CREDENTIALS_JSON }}" | base64 -d > credenciales.json
 
       - name: Ejecutar script
         env:
