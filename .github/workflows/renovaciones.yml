@@ -2,7 +2,7 @@ name: Renovaciones Licencias
 
 on:
   schedule:
-    - cron: "0 13 * * *" # 8am Colombia (UTC-5)
+    - cron: "*/5 * * * *" # Cada 5 minutos para pruebas
   workflow_dispatch:
 
 jobs:
