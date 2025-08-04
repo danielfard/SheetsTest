@@ -9,6 +9,7 @@ Este proyecto automatiza el envío de recordatorios de renovación de licencias 
 - 📅 Verifica fechas de renovación desde una hoja de cálculo compartida.
 - 📬 Envía correos personalizados con HTML a los responsables de cada software.
 - 🔄 Ejecutado automáticamente todos los días a las 8:00 a.m. Colombia vía GitHub Actions.
+- 📅 Generar una alerta de vencimiento 7 días antes y otra 1 día antes de la fecha límite a la persona responsable (Correo registrado).
 - 🔐 Manejo seguro de credenciales con GitHub Secrets.
 
 ---
